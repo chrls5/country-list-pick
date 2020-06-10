@@ -25,4 +25,8 @@ class CountryCode {
   String toLongString() => "$dialCode $name";
 
   String toCountryStringOnly() => '$name';
+
+  String toCodeString() => "$code";
+
+  String toNameAndCode() => "$name ($code)";
 }

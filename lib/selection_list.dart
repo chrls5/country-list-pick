@@ -81,11 +81,19 @@ class _SelectionListState extends State<SelectionList> {
     height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Select Country"),
+        iconTheme: IconThemeData(
+          color: Colors.black, //change your color here
+        ),
+        title: Image.asset(
+          'assets/carrot.png',
+          height: 60,
+          width: 60,
+        ),
         centerTitle: true,
+        backgroundColor: Colors.white,
       ),
       body: Container(
-        color: Color(0xfff4f4f4),
+        color: Colors.white,
         child: LayoutBuilder(builder: (context, contrainsts) {
           diff = height - contrainsts.biggest.height;
           _heightscroller = (contrainsts.biggest.height) / _alphabet.length;
@@ -95,24 +103,20 @@ class _SelectionListState extends State<SelectionList> {
               ListView(
                 controller: _controllerScroll,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Text('SEARCH'),
-                  ),
                   Container(
                     color: Colors.white,
                     padding: EdgeInsets.all(20.0),
                     child: TextField(
                       controller: _controller,
                       decoration: InputDecoration.collapsed(
-                        hintText: "Search...",
+                        hintText: "Search language",
                       ),
                       onChanged: _filterElements,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(15.0),
-                    child: Text('LAST PICK'),
+                    child: Text('Selected language'),
                   ),
                   Container(
                     color: Colors.white,
@@ -162,21 +166,44 @@ class _SelectionListState extends State<SelectionList> {
     );
   }
 
+  CountryCode prev;
+  bool first = true;
+
   Widget getListCountry(CountryCode e) {
-    return Container(
-      height: 50,
-      color: Colors.white,
-      child: ListTile(
-        leading: Image.asset(
-          e.flagUri,
-          package: 'country_list_pick',
-          width: 30.0,
+    if (first) {
+      prev = e;
+      first = false;
+    }
+    bool toDiv = !e.name.startsWith(prev.name.substring(0, 1));
+
+    if(toDiv)
+      prev = e;
+    return Column(
+      children: <Widget>[
+
+        if (toDiv) 
+          Divider(color: Colors.black),
+
+
+        Container(
+          height: 50,
+          color: Colors.white,
+          child: ListTile(
+            leading: Image.asset(
+              e.flagUri,
+              package: 'country_list_pick',
+              width: 30.0,
+            ),
+            title: Text(e.toNameAndCode()),
+            onTap: () {
+              _sendDataBack(context, e);
+            },
+          ),
         ),
-        title: Text(e.name),
-        onTap: () {
-          _sendDataBack(context, e);
-        },
-      ),
+        
+        
+        
+      ],
     );
   }
 
@@ -222,7 +249,6 @@ class _SelectionListState extends State<SelectionList> {
       ),
     );
   }
-
 
   void _filterElements(String s) {
     s = s.toUpperCase();
