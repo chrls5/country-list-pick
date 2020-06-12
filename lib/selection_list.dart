@@ -39,7 +39,9 @@ class _SelectionListState extends State<SelectionList> {
       return a.name.toString().compareTo(b.name.toString());
     });
     _controllerScroll = ScrollController();
-    _controller.addListener(_scrollListener);
+    _controllerScroll.addListener(onscrolllistview);
+     _controllerScroll.addListener(_scrollListener); //was only controller
+
     super.initState();
   }
 
@@ -86,8 +88,8 @@ class _SelectionListState extends State<SelectionList> {
         ),
         title: Image.asset(
           'assets/carrot.png',
-          height: 60,
-          width: 60,
+          height: 40,
+          width: 40,
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -98,63 +100,82 @@ class _SelectionListState extends State<SelectionList> {
           diff = height - contrainsts.biggest.height;
           _heightscroller = (contrainsts.biggest.height) / _alphabet.length;
           _sizeheightcontainer = (contrainsts.biggest.height);
-          return Stack(
+          return Row(
             children: <Widget>[
-              ListView(
-                controller: _controllerScroll,
-                children: [
-                  Container(
-                    color: Colors.white,
-                    padding: EdgeInsets.all(20.0),
-                    child: TextField(
-                      controller: _controller,
-                      decoration: InputDecoration.collapsed(
-                        hintText: "Search language",
-                      ),
-                      onChanged: _filterElements,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Text('Selected language'),
-                  ),
-                  Container(
-                    color: Colors.white,
-                    child: ListTile(
-                      leading: Image.asset(
-                        widget.initialSelection.flagUri,
-                        package: 'country_list_pick',
-                        width: 32.0,
-                      ),
-                      title: Text(widget.initialSelection.name),
-                      trailing: Padding(
-                        padding: const EdgeInsets.only(right: 20.0),
-                        child: Icon(Icons.check, color: Colors.green),
+              Expanded(
+                flex: 9,
+                child: ListView(
+                  controller: _controllerScroll,
+                  children: [
+                    Container(
+                      color: Colors.white,
+                      padding: EdgeInsets.all(25.0),
+                      child: TextField(
+                        controller: _controller,
+                        decoration: InputDecoration(
+                          labelText: "Search language",
+                          labelStyle:
+                              TextStyle(fontSize: 20.0, color: Colors.black),
+                          filled: false,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            borderSide:
+                                BorderSide(width: 1, color: Color(0xFF2BA577)),
+                          ),
+                          border: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(4)),
+                              borderSide:
+                                  BorderSide(width: 1, color: Colors.black)),
+                        ),
+                        onChanged: _filterElements,
                       ),
                     ),
-                  ),
-                  SizedBox(height: 15),
-                ]..addAll(
-                    countries.map(
-                      (e) => getListCountry(e),
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Text('Selected language'),
                     ),
-                  ),
+                    Container(
+                      color: Colors.white,
+                      child: ListTile(
+                        leading: Image.asset(
+                          widget.initialSelection.flagUri,
+                          package: 'country_list_pick',
+                          width: 32.0,
+                        ),
+                        title: Text(widget.initialSelection.name),
+                        trailing: Padding(
+                          padding: const EdgeInsets.only(right: 20.0),
+                          child: Icon(Icons.check, color: Colors.green),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 15),
+                  ]..addAll(
+                      countries.map(
+                        (e) => getListCountry(e),
+                      ),
+                    ),
+                ),
               ),
               if (isShow == true)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: GestureDetector(
-                    onVerticalDragUpdate: _onVerticalDragUpdate,
-                    onVerticalDragStart: _onVerticalDragStart,
-                    child: Container(
-                      height: 20.0 * 30,
-                      color: Colors.transparent,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: []..addAll(
-                            List.generate(_alphabet.length,
-                                (index) => _getAlphabetItem(index)),
-                          ),
+                Expanded(
+                  flex: 1,
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onVerticalDragUpdate: _onVerticalDragUpdate,
+                      onVerticalDragStart: _onVerticalDragStart,
+                      child: Container(
+                        height: 20.0 * 30,
+                        color: Colors.transparent,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: []..addAll(
+                              List.generate(_alphabet.length,
+                                  (index) => _getAlphabetItem(index)),
+                            ),
+                        ),
                       ),
                     ),
                   ),
@@ -176,15 +197,14 @@ class _SelectionListState extends State<SelectionList> {
     }
     bool toDiv = !e.name.startsWith(prev.name.substring(0, 1));
 
-    if(toDiv)
-      prev = e;
+    if (toDiv) prev = e;
     return Column(
       children: <Widget>[
-
-        if (toDiv) 
-          Divider(color: Colors.black),
-
-
+        if (toDiv)
+          Divider(
+            color: Colors.black,
+            indent: 10,
+          ),
         Container(
           height: 50,
           color: Colors.white,
@@ -200,9 +220,6 @@ class _SelectionListState extends State<SelectionList> {
             },
           ),
         ),
-        
-        
-        
       ],
     );
   }
@@ -220,6 +237,7 @@ class _SelectionListState extends State<SelectionList> {
                         countries[i].name.toString().toUpperCase()[0]) ==
                     0) {
                   _controllerScroll.jumpTo((i * _itemsizeheight) + 10);
+                  //  _controllerScroll.animateTo((i * _itemsizeheight) + 10);
                   break;
                 }
               }
@@ -289,6 +307,26 @@ class _SelectionListState extends State<SelectionList> {
 
   void _onVerticalDragStart(DragStartDetails details) {
     _offsetContainer = details.globalPosition.dy - diff;
+  }
+
+  onscrolllistview() {
+    var indexFirst =
+        ((_controllerScroll.offset / (_itemsizeheight))% countries.length)
+            .floor();
+    var fletter = countries[indexFirst]
+        .name
+        .toString()
+        .toUpperCase()[0]; //letter of language
+
+    var i = _alphabet.indexOf(fletter); //number of alphabet
+
+    if (i != -1) {
+      setState(() {
+        posSelected = i;
+        _text = _alphabet[i];
+        _offsetContainer = i * _itemsizeheight; //_itemsizeheight
+      });
+    }
   }
 
   _scrollListener() {
