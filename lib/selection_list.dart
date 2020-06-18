@@ -2,11 +2,11 @@ import 'package:country_list_pick/support/code_country.dart';
 import 'package:flutter/material.dart';
 
 class SelectionList extends StatefulWidget {
-/*  SelectionList(
+ SelectionList(
     this.elements,
     this.initialSelection, {
     Key key,
-  }) : super(key: key);*/
+  }) : super(key: key);
 
   final List<CountryCode> elements;
   final CountryCode initialSelection;
